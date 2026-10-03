@@ -1,0 +1,6 @@
+{
+  "name": "AegisVoyage - AI Family Travel Assistant",
+  "description": "Intelligent family travel assistant featuring profile onboarding, dynamic pace and allergen routing, real-time context management, weather resiliency, and emergency triage simulation.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
