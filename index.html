@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,13 +9,1249 @@
     <meta property="og:description" content="Trip Pilot: Intelligent family travel assistant featuring profile onboarding, dynamic pace and allergen routing, real-time context management, weather resiliency, and emergency triage simulation." />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Standalone Tailwind CSS CDN & Icons -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+              mono: ['"JetBrains Mono"', 'monospace'],
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+      .glass-panel {
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+      }
+      .dark .glass-panel {
+        background: rgba(15, 23, 42, 0.8);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .glass-card {
+        background: rgba(255, 255, 255, 0.65);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(226, 232, 240, 0.8);
+      }
+      .dark .glass-card {
+        background: rgba(30, 41, 59, 0.65);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+    </style>
   </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+  <body class="min-h-screen bg-gradient-to-br from-slate-100 via-sky-50/50 to-indigo-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-800 dark:text-slate-100 transition-colors duration-200 flex flex-col relative pb-24">
+
+    <!-- 1. CRITICAL SAFETY & SANDBOX SIMULATION BANNER -->
+    <aside class="sticky top-0 z-50 w-full bg-amber-500/95 dark:bg-amber-600/95 text-amber-950 dark:text-amber-50 px-4 py-2 border-b border-amber-600/30 text-xs sm:text-sm font-medium shadow-sm backdrop-blur-md">
+      <div class="max-w-7xl mx-auto flex items-center justify-between gap-3">
+        <div class="flex items-center gap-2 truncate">
+          <span>⚠️</span>
+          <span class="truncate">
+            <strong>⚠️ MVP SIMULATION MODE:</strong> All AI insights, transit calculations, weather routing, and emergency triage protocols are mock simulations for demonstration purposes only.
+          </span>
+        </div>
+        <span class="hidden md:inline-flex items-center px-2 py-0.5 rounded bg-amber-900/15 dark:bg-amber-950/40 text-[11px] font-semibold shrink-0">
+          Architectural Sandbox
+        </span>
+      </div>
+    </aside>
+
+    <!-- 2. MODERN GLASSMORPHIC TAB NAVIGATION BAR -->
+    <header class="sticky top-[37px] z-40 w-full glass-panel border-b border-slate-200/50 dark:border-slate-800/80">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+        <!-- Zone 1: Single text element wordmark -->
+        <div class="flex items-center gap-2.5 shrink-0">
+          <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center text-white shadow-md font-bold text-sm">
+            🧭
+          </div>
+          <span class="text-lg font-bold tracking-tight text-slate-900 dark:text-white">Trip Pilot</span>
+        </div>
+
+        <!-- Zone 2: Fluid Tab Navigation -->
+        <nav class="flex items-center p-1 rounded-xl bg-slate-200/60 dark:bg-slate-800/60 backdrop-blur-md border border-slate-300/40 dark:border-slate-700/40 text-xs sm:text-sm font-medium">
+          <button id="nav-btn-onboarding" onclick="switchTab('onboarding')" class="px-3.5 py-1.5 rounded-lg transition-all whitespace-nowrap">
+            <span class="hidden sm:inline">Onboarding & Profiles</span>
+            <span class="sm:hidden">Profiles</span>
+          </button>
+          <button id="nav-btn-planning" onclick="switchTab('planning')" class="px-3.5 py-1.5 rounded-lg transition-all whitespace-nowrap">
+            <span class="hidden sm:inline">Trip Planning</span>
+            <span class="sm:hidden">Planning</span>
+          </button>
+          <button id="nav-btn-management" onclick="switchTab('management')" class="px-3.5 py-1.5 rounded-lg transition-all whitespace-nowrap">
+            <span class="hidden sm:inline">Trip Management Dashboard</span>
+            <span class="sm:hidden">Dashboard</span>
+          </button>
+        </nav>
+
+        <!-- Zone 3: Download Files & Dark Mode -->
+        <div class="flex items-center gap-2.5 shrink-0">
+          <button onclick="openDownloadModal()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-700 dark:text-slate-200 bg-white/70 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all shadow-sm active:scale-95">
+            <span>📥</span>
+            <span class="hidden sm:inline">Download Files</span>
+          </button>
+
+          <button id="btn-theme-toggle" onclick="toggleTheme()" class="p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700/60 transition-colors" title="Toggle Dark/Light Mode">
+            <span id="theme-icon">🌙</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN VIEW CONTAINER -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
+
+      <!-- SECTION 1: ONBOARDING & PROFILE MANAGEMENT TAB -->
+      <section id="view-onboarding" class="space-y-6">
+        <div class="glass-panel rounded-2xl p-6 sm:p-8">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <span class="text-xs font-semibold text-sky-600 dark:text-sky-400 uppercase tracking-wider">Multi-Traveler Onboarding Engine</span>
+              <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Traveler Profile & Family Accommodations</h1>
+              <p class="mt-1 text-sm text-slate-600 dark:text-slate-300 max-w-2xl">
+                Configure personal dietary restrictions, mobility needs, and daily pacing. Trip Pilot dynamically adjusts transit buffers, restaurant recommendations, and crisis protocols to match everyone in your party.
+              </p>
+            </div>
+            <!-- Wizard Step Pills -->
+            <div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-800/80 p-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold">
+              <button id="wiz-pill-1" onclick="setWizardStep(1)" class="px-3 py-1.5 rounded-lg transition-all">1. Roster</button>
+              <button id="wiz-pill-2" onclick="setWizardStep(2)" class="px-3 py-1.5 rounded-lg transition-all">2. Accommodations</button>
+              <button id="wiz-pill-3" onclick="setWizardStep(3)" class="px-3 py-1.5 rounded-lg transition-all">3. Summary</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Wizard Step 1: Group Name & Roster -->
+        <div id="wiz-step-1" class="glass-panel rounded-2xl p-6 sm:p-8 space-y-6">
+          <div class="max-w-md">
+            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Family / Group Profile Name</label>
+            <input type="text" id="input-family-name" class="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-sky-500 outline-none" placeholder="e.g. The Miller Family" />
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-sm font-bold text-slate-900 dark:text-white">Travelers in Party</h3>
+              <button onclick="addRosterMember()" class="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/60 border border-sky-200 dark:border-sky-800 rounded-lg hover:bg-sky-100">
+                + Add Companion
+              </button>
+            </div>
+            <div id="roster-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+          </div>
+
+          <div class="pt-4 flex justify-end border-t border-slate-200 dark:border-slate-800">
+            <button onclick="setWizardStep(2)" class="px-5 py-2.5 bg-sky-600 hover:bg-sky-500 text-white text-xs sm:text-sm font-semibold rounded-xl shadow-md transition-all active:scale-95">
+              Next: Accommodations & Pacing &rarr;
+            </button>
+          </div>
+        </div>
+
+        <!-- Wizard Step 2: Member Details & Quick Toggles -->
+        <div id="wiz-step-2" class="glass-panel rounded-2xl p-6 sm:p-8 space-y-6 hidden">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Active Member:</span>
+            <div id="member-switcher" class="flex items-center gap-2 overflow-x-auto"></div>
+          </div>
+
+          <!-- Basic Info -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase mb-1">Name</label>
+              <input type="text" id="cur-member-name" onchange="updateActiveMemberName(this.value)" class="w-full px-4 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-sm outline-none focus:ring-2 focus:ring-sky-500" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase mb-1">Role</label>
+              <select id="cur-member-role" onchange="updateActiveMemberRole(this.value)" class="w-full px-4 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-sm outline-none focus:ring-2 focus:ring-sky-500">
+                <option value="Self">Self</option>
+                <option value="Spouse">Spouse</option>
+                <option value="Child">Child</option>
+                <option value="Parent">Parent</option>
+                <option value="Friend">Friend</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Diet Quick Select Toggles -->
+          <div class="space-y-2">
+            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase">Dietary Restrictions & Allergies</label>
+            <div id="diet-toggles" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2"></div>
+          </div>
+
+          <!-- Pace Select Toggles -->
+          <div class="space-y-2">
+            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase">Travel Pacing & Energy Rhythm</label>
+            <div id="pace-toggles" class="grid grid-cols-1 sm:grid-cols-3 gap-3"></div>
+          </div>
+
+          <!-- Interests Quick Select -->
+          <div class="space-y-2">
+            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase">Core Travel Interests</label>
+            <div id="interest-toggles" class="flex flex-wrap gap-2"></div>
+          </div>
+
+          <!-- Dynamic "Add Custom Preference" -->
+          <div class="space-y-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase">Add Custom Preference or Medical Need</label>
+            <div class="flex gap-2">
+              <input type="text" id="input-custom-pref" placeholder="e.g. Requires stroller-accessible routes, severe motion sickness" class="flex-1 px-4 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-sm outline-none focus:ring-2 focus:ring-sky-500" />
+              <button onclick="addCustomPreference()" class="px-4 py-2 bg-slate-900 dark:bg-slate-800 text-white rounded-xl text-xs font-semibold hover:bg-slate-800">Add</button>
+            </div>
+            <div id="custom-pref-tags" class="flex flex-wrap gap-1.5 pt-1"></div>
+          </div>
+
+          <div class="pt-4 flex items-center justify-between border-t border-slate-200 dark:border-slate-800">
+            <button onclick="setWizardStep(1)" class="text-xs font-semibold text-slate-500 hover:text-slate-800">&larr; Back to Roster</button>
+            <button onclick="saveAndReviewProfile()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs sm:text-sm font-semibold rounded-xl shadow-md transition-all active:scale-95">Save Profile & Review &rarr;</button>
+          </div>
+        </div>
+
+        <!-- Wizard Step 3: Summary Cards -->
+        <div id="wiz-step-3" class="space-y-6 hidden">
+          <div class="glass-panel rounded-2xl p-6 sm:p-8 space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/60 dark:border-slate-800 pb-4">
+              <div>
+                <span class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Verified Active Profile</span>
+                <h2 id="summary-family-name" class="text-2xl font-bold text-slate-900 dark:text-white"></h2>
+                <div id="summary-meta" class="text-xs text-slate-500 mt-1"></div>
+              </div>
+              <div class="flex items-center gap-2">
+                <button onclick="setWizardStep(2)" class="px-3 py-2 text-xs font-semibold rounded-xl border border-slate-300 dark:border-slate-700 bg-white/60 dark:bg-slate-800/60 hover:bg-slate-100">Edit Profile</button>
+                <button onclick="switchTab('planning')" class="px-5 py-2 bg-sky-600 hover:bg-sky-500 text-white text-xs sm:text-sm font-semibold rounded-xl shadow-md">Continue to Trip Planning &rarr;</button>
+              </div>
+            </div>
+
+            <!-- Collective Shields -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="glass-card p-4 rounded-xl border">
+                <span class="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase block mb-1">🛡️ Collective Dietary Shield</span>
+                <div id="summary-dietary-shield" class="flex flex-wrap gap-1 text-xs"></div>
+              </div>
+              <div class="glass-card p-4 rounded-xl border">
+                <span class="text-xs font-bold text-sky-600 dark:text-sky-400 uppercase block mb-1">⏱️ Pacing & Transition Buffers</span>
+                <p id="summary-pacing-text" class="text-xs text-slate-700 dark:text-slate-300 font-medium"></p>
+              </div>
+              <div class="glass-card p-4 rounded-xl border">
+                <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase block mb-1">🤝 Special Accommodations</span>
+                <ul id="summary-custom-notes" class="text-xs text-slate-700 dark:text-slate-300 space-y-1"></ul>
+              </div>
+            </div>
+
+            <!-- Member Summary Badges -->
+            <div id="summary-members-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 2: TRIP PLANNING TAB (OPTIONAL) -->
+      <section id="view-planning" class="space-y-6 hidden">
+        <div class="glass-panel rounded-2xl p-6 sm:p-8">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div>
+              <span class="text-xs font-semibold text-sky-600 dark:text-sky-400 uppercase tracking-wider">Step 2: AI Itinerary Synthesizer</span>
+              <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Trip Planning & Profile-Honoring Synthesis</h1>
+              <p class="mt-1 text-sm text-slate-600 dark:text-slate-300 max-w-2xl">
+                Specify your travel dates and destination. Trip Pilot synthesizes an itinerary tailored to your registered party, enforcing certified allergen-safe dining, family pacing intervals, and mobility buffers.
+              </p>
+            </div>
+            <!-- Prominent Skip Button -->
+            <button onclick="skipTripPlanning()" class="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white/70 dark:bg-slate-800/70 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 shadow-sm active:scale-95">
+              <span>⏩ Skip / I already have a trip booked</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Planning Form -->
+        <div class="glass-panel rounded-2xl p-6 sm:p-8 space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="lg:col-span-2">
+              <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase mb-1">Destination City or Region</label>
+              <input type="text" id="trip-destination" value="Kyoto & Nara, Japan" class="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-sm focus:ring-2 focus:ring-sky-500 outline-none" />
+              <div class="flex flex-wrap gap-1.5 mt-2 text-[11px] text-slate-400">
+                <span>Presets:</span>
+                <button onclick="setTripDestination('Kyoto & Nara, Japan')" class="hover:text-sky-500">Kyoto</button> ·
+                <button onclick="setTripDestination('Barcelona & Costa Brava, Spain')" class="hover:text-sky-500">Barcelona</button> ·
+                <button onclick="setTripDestination('Reykjavik & Golden Circle, Iceland')" class="hover:text-sky-500">Iceland</button>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase mb-1">Start & End Dates</label>
+              <div class="grid grid-cols-2 gap-2">
+                <input type="date" id="trip-start-date" value="2026-10-15" class="w-full px-2 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs" />
+                <input type="date" id="trip-end-date" value="2026-10-20" class="w-full px-2 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase mb-1">Budget Level</label>
+              <select id="trip-budget" class="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs outline-none">
+                <option value="Moderate">Moderate</option>
+                <option value="Budget-Friendly">Budget-Friendly</option>
+                <option value="Luxury">Luxury</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="pt-3 flex items-center justify-between border-t border-slate-200 dark:border-slate-800">
+            <span class="text-xs text-slate-500">Synthesizes schedule directly aligned with party pace and allergy directives.</span>
+            <button onclick="generateItinerary()" class="px-6 py-2.5 bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white text-xs sm:text-sm font-semibold rounded-xl shadow-md transition-all active:scale-95">
+              ✨ Generate Profile-Honoring AI Itinerary
+            </button>
+          </div>
+        </div>
+
+        <!-- Generated Itinerary Container -->
+        <div id="itinerary-preview-card" class="glass-panel rounded-2xl p-6 sm:p-8 space-y-6 hidden">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
+            <div>
+              <span class="text-xs font-semibold text-emerald-600 uppercase tracking-wider">Synthesized Itinerary Preview</span>
+              <h2 id="itin-heading" class="text-2xl font-bold text-slate-900 dark:text-white"></h2>
+              <p class="text-xs text-amber-600 dark:text-amber-400 font-mono mt-1">[MOCK DEMO DATA: Not medical/legal advice]</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <button onclick="downloadItineraryMarkdown()" class="px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white/80 dark:bg-slate-800 text-xs font-semibold flex items-center gap-1.5 hover:bg-slate-100">
+                <span>📥</span>
+                <span>Download Itinerary (.md)</span>
+              </button>
+              <button onclick="switchTab('management')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs sm:text-sm font-semibold rounded-xl shadow-md">
+                Adopt & Open Real-Time Dashboard &rarr;
+              </button>
+            </div>
+          </div>
+
+          <!-- Constraints Alert Box -->
+          <div id="itin-constraints-box" class="p-4 rounded-xl bg-sky-50/70 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800 text-xs text-sky-900 dark:text-sky-200 space-y-1"></div>
+
+          <!-- Timeline Days -->
+          <div id="itin-days-container" class="space-y-6"></div>
+        </div>
+      </section>
+
+      <!-- SECTION 3: REAL-TIME TRIP MANAGEMENT & PROBLEM SOLVING TAB -->
+      <section id="view-management" class="space-y-6 hidden">
+        <div class="glass-panel rounded-2xl p-6 sm:p-8">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <span class="text-xs font-semibold text-sky-600 dark:text-sky-400 uppercase tracking-wider">Real-Time Travel Copilot</span>
+              <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Trip Management & Problem Solving</h1>
+              <p id="dashboard-subtitle" class="mt-1 text-sm text-slate-600 dark:text-slate-300"></p>
+            </div>
+            <!-- Sub-Tools Launch Bar -->
+            <div class="flex flex-wrap items-center gap-2">
+              <button onclick="toggleSubTool('time')" class="px-3 py-2 text-xs font-semibold rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100">
+                ⏱️ Time Calculator
+              </button>
+              <button onclick="toggleSubTool('weather')" class="px-3 py-2 text-xs font-semibold rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100">
+                🌧️ Weather Resiliency
+              </button>
+              <button onclick="toggleSubTool('emergency')" class="px-3 py-2 text-xs font-semibold rounded-xl border border-rose-200 dark:border-rose-900 bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 hover:bg-rose-100">
+                🚨 Emergency Triage
+              </button>
+              <button onclick="openDownloadModal()" class="px-3 py-2 text-xs font-semibold rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100">
+                📥 Download Files
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- EXACT REQUIRED ACTION PROMPTS, INPUT FIELD, MIC ICON & SENTIMENT STRIP -->
+        <div class="glass-panel rounded-2xl p-6 sm:p-8 space-y-6">
+          <div class="space-y-2">
+            <!-- Exact text prompts stacked vertically -->
+            <div class="space-y-0.5">
+              <p class="text-base sm:text-lg font-bold tracking-tight text-slate-900 dark:text-white">
+                What are you doing now? or ...
+              </p>
+              <p class="text-sm font-semibold text-slate-600 dark:text-slate-300">
+                What would you like to do next
+              </p>
+            </div>
+
+            <!-- Wide text input with embedded microphone icon inside right boundary -->
+            <div class="relative">
+              <input type="text" id="context-input" oninput="handleContextInput(this.value)" placeholder="e.g. Kids are getting restless, looking for a shaded garden or allergy-safe gelato..." class="w-full pl-4 pr-12 py-3.5 rounded-2xl bg-white dark:bg-slate-800/90 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white text-sm sm:text-base outline-none focus:ring-2 focus:ring-sky-500 shadow-inner" />
+              <button id="mic-btn" onclick="toggleVoiceInput()" class="absolute right-2.5 top-2.5 p-2 rounded-xl text-slate-400 hover:text-sky-600 transition-all" title="Toggle voice input">
+                🎙️
+              </button>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-1.5 text-xs pt-1">
+              <span class="text-slate-400 font-medium">Quick Context:</span>
+              <button onclick="setContextChip('Looking for dinner now')" class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 hover:text-sky-500">Looking for dinner</button>
+              <button onclick="setContextChip('Kids are getting tired')" class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 hover:text-sky-500">Kids getting tired</button>
+              <button onclick="setContextChip('Sudden rain starting')" class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 hover:text-sky-500">Sudden rain</button>
+            </div>
+          </div>
+
+          <!-- EXACT FEEDBACK SENTIMENT STRIP -->
+          <div class="pt-2 border-t border-slate-200 dark:border-slate-800">
+            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Feedback Sentiment Strip</label>
+            <div class="flex items-center gap-2 sm:gap-3 overflow-x-auto pb-2">
+              <button onclick="handleSentiment('loved', '👍 Loved it!')" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 transition-all active:scale-95 whitespace-nowrap">
+                <span>👍</span>
+                <span>Loved it!</span>
+              </button>
+              <button onclick="handleSentiment('favorite', '& Favorite it ⭐')" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition-all active:scale-95 whitespace-nowrap">
+                <span>⭐</span>
+                <span>& Favorite it ⭐</span>
+              </button>
+              <button onclick="handleSentiment('hated', '👎 Hated it!')" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-800 hover:bg-rose-100 transition-all active:scale-95 whitespace-nowrap">
+                <span>👎</span>
+                <span>Hated it!</span>
+              </button>
+              <button onclick="handleSentiment('reschedule', '🕑 Try another time')" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 transition-all active:scale-95 whitespace-nowrap">
+                <span>🕑</span>
+                <span>Try another time</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- EXACT AI SUGGESTIONS ENGINE -->
+          <div class="pt-4 border-t border-slate-200 dark:border-slate-800 space-y-4">
+            <div class="flex items-center justify-between">
+              <h2 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+                <span>✨</span>
+                <span>Suggestions:</span>
+              </h2>
+              <span id="suggestions-subtitle" class="text-xs text-slate-500"></span>
+            </div>
+            <div id="suggestions-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+          </div>
+        </div>
+
+        <!-- SUB-TOOL 1: Time Management Calculator -->
+        <div id="tool-time-panel" class="glass-panel rounded-2xl p-6 sm:p-8 space-y-4 border-sky-300 dark:border-sky-700 hidden">
+          <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+            <h3 class="font-bold text-base text-slate-900 dark:text-white">⏱️ Time Management & Alarm Schedule Calculator</h3>
+            <button onclick="toggleSubTool('none')" class="text-xs text-slate-400 font-bold hover:text-slate-600">Close &times;</button>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+            <div>
+              <label class="block text-slate-500 uppercase font-bold mb-1">Origin</label>
+              <input type="text" id="calc-origin" value="Hotel Kanra Kyoto" class="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700" />
+            </div>
+            <div>
+              <label class="block text-slate-500 uppercase font-bold mb-1">Destination</label>
+              <input type="text" id="calc-dest" value="Nishiki Market Arcade" class="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700" />
+            </div>
+            <div>
+              <label class="block text-slate-500 uppercase font-bold mb-1">Target Arrival</label>
+              <input type="time" id="calc-time" value="12:30" class="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 font-mono" />
+            </div>
+            <div>
+              <label class="block text-slate-500 uppercase font-bold mb-1">Transit Mode</label>
+              <select id="calc-mode" class="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700">
+                <option value="walking">Walking (Direct)</option>
+                <option value="stroller">Stroller (Elevators Only)</option>
+                <option value="subway">Subway / Metro</option>
+                <option value="taxi">Taxi / Rideshare</option>
+              </select>
+            </div>
+          </div>
+          <div class="flex justify-end">
+            <button onclick="computeAlarms()" class="px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white rounded-xl text-xs font-semibold">Compute Alarm Schedules</button>
+          </div>
+          <div id="calc-results" class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-3 hidden"></div>
+        </div>
+
+        <!-- SUB-TOOL 2: Weather Resiliency Engine -->
+        <div id="tool-weather-panel" class="glass-panel rounded-2xl p-6 sm:p-8 space-y-4 border-sky-300 dark:border-sky-700 hidden">
+          <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+            <h3 class="font-bold text-base text-slate-900 dark:text-white">🌧️ Weather Resiliency Engine</h3>
+            <button onclick="toggleSubTool('none')" class="text-xs text-slate-400 font-bold hover:text-slate-600">Close &times;</button>
+          </div>
+          <div class="flex flex-wrap gap-2 text-xs">
+            <button onclick="triggerWeatherScenario('Heavy Rain')" class="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-slate-800 font-semibold hover:border-sky-400">🌧️ Heavy Rain</button>
+            <button onclick="triggerWeatherScenario('Severe Heat Wave')" class="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-slate-800 font-semibold hover:border-sky-400">☀️ Severe Heat Wave</button>
+            <button onclick="triggerWeatherScenario('Sudden Thunderstorm')" class="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-slate-800 font-semibold hover:border-sky-400">⚡ Sudden Thunderstorm</button>
+          </div>
+          <div id="weather-results" class="space-y-3"></div>
+        </div>
+
+        <!-- SUB-TOOL 3: Emergency Crisis Assistant -->
+        <div id="tool-emergency-panel" class="glass-panel rounded-2xl p-6 sm:p-8 space-y-4 border-rose-300 dark:border-rose-900 hidden">
+          <div class="flex items-center justify-between border-b border-rose-200 dark:border-rose-900 pb-3">
+            <h3 class="font-bold text-base text-rose-950 dark:text-rose-100">🚨 Emergency Crisis Assistant & Logistical Triage</h3>
+            <button onclick="toggleSubTool('none')" class="text-xs text-slate-400 font-bold hover:text-slate-600">Close &times;</button>
+          </div>
+          <div class="p-3 rounded-xl bg-rose-100 dark:bg-rose-950/70 border border-rose-300 dark:border-rose-800 text-xs text-rose-900 dark:text-rose-200 font-mono">
+            <strong>CRITICAL NOTICE:</strong> [MOCK DEMO DATA: Not medical/legal advice] For acute emergencies, call 119 in Japan, 911 in US/CA, 112 in EU.
+          </div>
+          <div class="flex flex-wrap gap-2 text-xs">
+            <button onclick="triggerEmergencyTriage('child_fever')" class="px-3 py-2 rounded-xl border border-rose-300 bg-white dark:bg-slate-800 font-semibold text-rose-700 dark:text-rose-300">Child's Sudden Fever (39°C)</button>
+            <button onclick="triggerEmergencyTriage('lost_med')" class="px-3 py-2 rounded-xl border border-slate-300 bg-white dark:bg-slate-800 font-semibold">Lost Prescription Medication</button>
+            <button onclick="triggerEmergencyTriage('allergy')" class="px-3 py-2 rounded-xl border border-slate-300 bg-white dark:bg-slate-800 font-semibold">Severe Allergic Reaction</button>
+          </div>
+          <div id="emergency-results" class="space-y-4"></div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- DEVELOPER ADMIN TOOLS TRAY -->
+    <footer class="fixed bottom-0 left-0 right-0 z-40 pointer-events-none">
+      <div class="max-w-7xl mx-auto px-4 pb-2 flex flex-col items-end">
+        <button onclick="toggleAdminTray()" class="pointer-events-auto flex items-center gap-2 px-3 py-1.5 rounded-t-lg bg-slate-900/90 dark:bg-slate-800/90 text-slate-200 hover:text-white border-t border-x border-slate-700/60 backdrop-blur-md text-xs font-semibold shadow-lg">
+          <span>🛠️</span>
+          <span>Developer Admin Tools</span>
+        </button>
+        <div id="admin-tray-panel" class="pointer-events-auto w-full max-w-xl bg-slate-950/95 text-slate-100 border border-slate-800 rounded-tl-xl p-4 shadow-2xl backdrop-blur-xl hidden">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-800 mb-3 text-xs">
+            <span class="font-bold text-sky-400 uppercase">Admin Sandbox Controls</span>
+            <span class="text-slate-400">Single-click live pitch resets</span>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="resetAppAndClearDemoData()" class="px-3 py-1.5 text-xs font-medium text-rose-300 bg-rose-950/60 hover:bg-rose-900 border border-rose-800 rounded-md transition-all active:scale-95">
+              🔄 Reset App & Clear Demo Data
+            </button>
+            <button onclick="loadDemoFamilyProfile()" class="px-3 py-1.5 text-xs font-medium text-sky-300 bg-sky-950/60 hover:bg-sky-900 border border-sky-800 rounded-md transition-all active:scale-95">
+              ✨ Load Preset Family Profile
+            </button>
+            <button onclick="openDownloadModal()" class="px-3 py-1.5 text-xs font-medium text-emerald-300 bg-emerald-950/60 hover:bg-emerald-900 border border-emerald-800 rounded-md transition-all active:scale-95">
+              📥 Download Files
+            </button>
+          </div>
+          <p class="text-[11px] text-slate-400 mt-2">
+            Single-click reset clears localStorage and returns view to initial onboarding without prompt blocks.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- DOWNLOAD FILES MODAL -->
+    <div id="modal-download" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm hidden">
+      <div class="w-full max-w-3xl rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl p-6 space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+          <div>
+            <h3 class="font-bold text-lg text-slate-900 dark:text-white">📥 Download Travel Files & Offline Dossier</h3>
+            <p class="text-xs text-slate-500">Zero-data offline travel access compiled on-device.</p>
+          </div>
+          <button onclick="closeDownloadModal()" class="text-slate-400 hover:text-slate-600 text-lg font-bold">&times;</button>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div class="p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 space-y-2">
+            <span class="text-[10px] font-bold uppercase text-sky-600">Offline Guide</span>
+            <h4 class="font-bold text-xs">Itinerary (.md)</h4>
+            <button onclick="downloadItineraryMarkdown()" class="w-full py-1.5 bg-sky-600 text-white rounded-lg text-xs font-semibold hover:bg-sky-500">Download .MD</button>
+          </div>
+          <div class="p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 space-y-2">
+            <span class="text-[10px] font-bold uppercase text-rose-600">Medical Kit</span>
+            <h4 class="font-bold text-xs">Emergency Cards (.txt)</h4>
+            <button onclick="downloadEmergencyCardsText()" class="w-full py-1.5 bg-rose-600 text-white rounded-lg text-xs font-semibold hover:bg-rose-500">Download .TXT</button>
+          </div>
+          <div class="p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 space-y-2">
+            <span class="text-[10px] font-bold uppercase text-emerald-600">Profile Data</span>
+            <h4 class="font-bold text-xs">Family Profile (.json)</h4>
+            <button onclick="downloadProfileJson()" class="w-full py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-semibold hover:bg-emerald-500">Download .JSON</button>
+          </div>
+          <div class="p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 space-y-2">
+            <span class="text-[10px] font-bold uppercase text-indigo-600">Complete State</span>
+            <h4 class="font-bold text-xs">Full Dossier (.json)</h4>
+            <button onclick="downloadFullBundleJson()" class="w-full py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-semibold hover:bg-indigo-500">Download All</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOAST CONTAINER -->
+    <div id="toast-box" class="fixed top-24 right-4 z-50 flex flex-col gap-2 pointer-events-none max-w-sm w-full"></div>
+
+    <!-- PURE STANDALONE FRAMEWORK-FREE JAVASCRIPT LOGIC -->
+    <script>
+      const MOCK_NOTICE = '[MOCK DEMO DATA: Not medical/legal advice]';
+
+      const DIET_LIST = ['Vegetarian', 'Vegan', 'Gluten-Free', 'Nut Allergy', 'Halal', 'Kosher'];
+      const PACE_LIST = [
+        { id: 'Slow/Relaxed', label: 'Slow/Relaxed', desc: '+45m buffers, late mornings' },
+        { id: 'Moderate', label: 'Moderate', desc: 'Standard 20m buffers, balanced' },
+        { id: 'Fast/Packed', label: 'Fast/Packed', desc: 'Rapid transit, full schedules' }
+      ];
+      const INTEREST_LIST = ['History/Culture', 'Outdoor Adventure', 'Foodie', 'Budget-Friendly', 'Luxury', 'Kid-Friendly'];
+
+      // App State
+      let profile = null;
+      let activeTrip = null;
+      let currentTab = 'onboarding';
+      let wizardStep = 1;
+      let activeMemberIdx = 0;
+      let members = [];
+      let isDark = false;
+
+      // Initialize on DOM Ready
+      document.addEventListener('DOMContentLoaded', () => {
+        initTheme();
+        loadState();
+        renderAll();
+      });
+
+      function initTheme() {
+        const saved = localStorage.getItem('aegis_theme_mode');
+        isDark = saved === 'dark' || (!saved && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        applyTheme();
+      }
+
+      function toggleTheme() {
+        isDark = !isDark;
+        localStorage.setItem('aegis_theme_mode', isDark ? 'dark' : 'light');
+        applyTheme();
+      }
+
+      function applyTheme() {
+        if (isDark) {
+          document.documentElement.classList.add('dark');
+          document.getElementById('theme-icon').textContent = '☀️';
+        } else {
+          document.documentElement.classList.remove('dark');
+          document.getElementById('theme-icon').textContent = '🌙';
+        }
+      }
+
+      function loadState() {
+        try {
+          const profData = localStorage.getItem('aegis_traveler_profile');
+          if (profData) profile = JSON.parse(profData);
+          const tripData = localStorage.getItem('aegis_active_trip');
+          if (tripData) activeTrip = JSON.parse(tripData);
+        } catch (e) {
+          console.error(e);
+        }
+
+        if (profile) {
+          members = profile.members;
+          wizardStep = 3;
+          currentTab = 'management';
+        } else {
+          members = [
+            {
+              id: 'm-1',
+              name: 'Alex Morgan',
+              role: 'Self',
+              dietary: ['Vegetarian'],
+              pace: 'Slow/Relaxed',
+              interests: ['History/Culture', 'Foodie'],
+              customPreferences: ['Prefers step-free walking paths']
+            }
+          ];
+          wizardStep = 1;
+          currentTab = 'onboarding';
+        }
+
+        if (!activeTrip) {
+          activeTrip = {
+            id: 'trip-default',
+            destination: 'Kyoto & Nara, Japan',
+            startDate: '2026-10-15',
+            endDate: '2026-10-20',
+            budgetLevel: 'Moderate'
+          };
+        }
+      }
+
+      function switchTab(tabId) {
+        currentTab = tabId;
+        ['onboarding', 'planning', 'management'].forEach(t => {
+          const view = document.getElementById(`view-${t}`);
+          const btn = document.getElementById(`nav-btn-${t}`);
+          if (t === tabId) {
+            view.classList.remove('hidden');
+            btn.className = 'px-3.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 text-sky-600 dark:text-sky-400 font-bold shadow-sm whitespace-nowrap';
+          } else {
+            view.classList.add('hidden');
+            btn.className = 'px-3.5 py-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:text-slate-900 hover:bg-white/40 whitespace-nowrap';
+          }
+        });
+        if (tabId === 'management') renderDashboard();
+      }
+
+      function setWizardStep(st) {
+        wizardStep = st;
+        [1, 2, 3].forEach(s => {
+          document.getElementById(`wiz-step-${s}`).classList.toggle('hidden', s !== st);
+          const pill = document.getElementById(`wiz-pill-${s}`);
+          if (s === st) {
+            pill.className = 'px-3 py-1.5 rounded-lg bg-sky-500 text-white shadow-sm font-bold';
+          } else {
+            pill.className = 'px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900';
+          }
+        });
+        if (st === 2) renderStep2();
+        if (st === 3) renderStep3();
+      }
+
+      function renderAll() {
+        document.getElementById('input-family-name').value = profile?.familyName || 'The Traveler Family';
+        renderRoster();
+        switchTab(currentTab);
+        setWizardStep(wizardStep);
+      }
+
+      function renderRoster() {
+        const grid = document.getElementById('roster-grid');
+        grid.innerHTML = members.map((m, idx) => `
+          <div onclick="selectMemberToEdit(${idx})" class="p-4 rounded-xl border cursor-pointer transition-all ${idx === activeMemberIdx ? 'bg-sky-50/80 dark:bg-sky-950/40 border-sky-400 shadow-sm' : 'bg-white/60 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700'}">
+            <div class="flex items-center justify-between">
+              <div>
+                <h4 class="font-bold text-sm text-slate-900 dark:text-white">${m.name}</h4>
+                <span class="text-xs text-sky-600 dark:text-sky-400 font-semibold">${m.role}</span>
+              </div>
+              ${members.length > 1 ? `<button onclick="event.stopPropagation(); removeMember(${idx})" class="text-xs text-rose-500 hover:underline">Remove</button>` : ''}
+            </div>
+            <div class="mt-2 text-[11px] text-slate-500">
+              <span>Pace: ${m.pace}</span> · <span class="text-amber-600">${m.dietary.join(', ') || 'No dietary alerts'}</span>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      function addRosterMember() {
+        members.push({
+          id: `m-${Date.now()}`,
+          name: `Companion ${members.length + 1}`,
+          role: 'Child',
+          dietary: [],
+          pace: members[0]?.pace || 'Slow/Relaxed',
+          interests: ['Kid-Friendly'],
+          customPreferences: []
+        });
+        activeMemberIdx = members.length - 1;
+        renderRoster();
+        showToast('Companion Added', 'New traveler added to party roster.');
+      }
+
+      function removeMember(idx) {
+        if (members.length <= 1) return;
+        members.splice(idx, 1);
+        activeMemberIdx = Math.max(0, idx - 1);
+        renderRoster();
+      }
+
+      function selectMemberToEdit(idx) {
+        activeMemberIdx = idx;
+        renderRoster();
+        setWizardStep(2);
+      }
+
+      function renderStep2() {
+        const cur = members[activeMemberIdx] || members[0];
+        document.getElementById('cur-member-name').value = cur.name;
+        document.getElementById('cur-member-role').value = cur.role;
+
+        // Switcher buttons
+        document.getElementById('member-switcher').innerHTML = members.map((m, idx) => `
+          <button onclick="selectMemberToEdit(${idx})" class="px-2.5 py-1 text-xs rounded-lg font-semibold ${idx === activeMemberIdx ? 'bg-sky-600 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'}">
+            ${m.name}
+          </button>
+        `).join('');
+
+        // Diet toggles
+        document.getElementById('diet-toggles').innerHTML = DIET_LIST.map(d => {
+          const sel = cur.dietary.includes(d);
+          return `<button onclick="toggleDiet('${d}')" class="px-2.5 py-2 rounded-xl border text-xs font-semibold transition-all ${sel ? 'bg-amber-500/20 border-amber-500 text-amber-900 dark:text-amber-200' : 'bg-white/60 dark:bg-slate-800 border-slate-200 dark:border-slate-700'}">${sel ? '✓ ' : ''}${d}</button>`;
+        }).join('');
+
+        // Pace toggles
+        document.getElementById('pace-toggles').innerHTML = PACE_LIST.map(p => {
+          const sel = cur.pace === p.id;
+          return `<button onclick="setPace('${p.id}')" class="p-3 rounded-xl border text-left text-xs transition-all ${sel ? 'bg-sky-500/20 border-sky-500 font-bold' : 'bg-white/60 dark:bg-slate-800 border-slate-200 dark:border-slate-700'}">
+            <div class="font-bold">${sel ? '✓ ' : ''}${p.label}</div>
+            <div class="text-[11px] text-slate-500 font-normal">${p.desc}</div>
+          </button>`;
+        }).join('');
+
+        // Interest toggles
+        document.getElementById('interest-toggles').innerHTML = INTEREST_LIST.map(i => {
+          const sel = cur.interests.includes(i);
+          return `<button onclick="toggleInterest('${i}')" class="px-3 py-1.5 rounded-lg border text-xs font-medium ${sel ? 'bg-indigo-500/20 border-indigo-500 text-indigo-900 dark:text-indigo-200 font-bold' : 'bg-white/60 dark:bg-slate-800 border-slate-200 dark:border-slate-700'}">${sel ? '✓ ' : ''}${i}</button>`;
+        }).join('');
+
+        // Custom tags
+        document.getElementById('custom-pref-tags').innerHTML = cur.customPreferences.map(c => `
+          <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-800 text-xs border border-slate-200 dark:border-slate-700">
+            <span>${c}</span>
+            <button onclick="removeCustomPref('${c}')" class="text-rose-500 font-bold">&times;</button>
+          </span>
+        `).join('');
+      }
+
+      function updateActiveMemberName(val) { members[activeMemberIdx].name = val; renderRoster(); }
+      function updateActiveMemberRole(val) { members[activeMemberIdx].role = val; renderRoster(); }
+      function toggleDiet(d) {
+        const cur = members[activeMemberIdx];
+        cur.dietary = cur.dietary.includes(d) ? cur.dietary.filter(x => x !== d) : [...cur.dietary, d];
+        renderStep2();
+      }
+      function setPace(p) { members[activeMemberIdx].pace = p; renderStep2(); }
+      function toggleInterest(i) {
+        const cur = members[activeMemberIdx];
+        cur.interests = cur.interests.includes(i) ? cur.interests.filter(x => x !== i) : [...cur.interests, i];
+        renderStep2();
+      }
+      function addCustomPreference() {
+        const input = document.getElementById('input-custom-pref');
+        const txt = input.value.trim();
+        if (!txt) return;
+        const cur = members[activeMemberIdx];
+        if (!cur.customPreferences.includes(txt)) cur.customPreferences.push(txt);
+        input.value = '';
+        renderStep2();
+      }
+      function removeCustomPref(item) {
+        const cur = members[activeMemberIdx];
+        cur.customPreferences = cur.customPreferences.filter(x => x !== item);
+        renderStep2();
+      }
+
+      function saveAndReviewProfile() {
+        const famName = document.getElementById('input-family-name').value.trim() || 'The Traveler Family';
+        profile = {
+          id: profile?.id || `profile-${Date.now()}`,
+          familyName: famName,
+          members,
+          updatedAt: new Date().toISOString()
+        };
+        localStorage.setItem('aegis_traveler_profile', JSON.stringify(profile));
+        showToast('Profile Saved', `Saved ${profile.familyName} with ${members.length} members.`);
+        setWizardStep(3);
+      }
+
+      function renderStep3() {
+        if (!profile) return;
+        document.getElementById('summary-family-name').textContent = profile.familyName;
+        document.getElementById('summary-meta').textContent = `${profile.members.length} Traveler(s) · Pace: ${profile.members[0].pace}`;
+
+        const diets = Array.from(new Set(profile.members.flatMap(m => m.dietary)));
+        document.getElementById('summary-dietary-shield').innerHTML = diets.length ? diets.map(d => `<span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-900 dark:text-amber-200 border border-amber-400 font-bold">${d}</span>`).join('') : '<span class="text-slate-400">Standard clean kitchens</span>';
+
+        const p = profile.members[0].pace;
+        document.getElementById('summary-pacing-text').textContent = p === 'Slow/Relaxed' ? '+45-minute family buffers scheduled between attractions.' : p === 'Fast/Packed' ? 'Rapid express pass transfers prioritized.' : 'Balanced 20-minute transition buffers.';
+
+        const customs = Array.from(new Set(profile.members.flatMap(m => m.customPreferences)));
+        document.getElementById('summary-custom-notes').innerHTML = customs.length ? customs.map(c => `<li>• ${c}</li>`).join('') : '<li>• Standard mobility routes</li>';
+
+        document.getElementById('summary-members-cards').innerHTML = profile.members.map(m => `
+          <div class="p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/40 dark:bg-slate-800/40 text-xs space-y-1">
+            <div class="flex justify-between font-bold">
+              <span>${m.name} (${m.role})</span>
+              <span class="text-slate-400">${m.pace}</span>
+            </div>
+            <div class="text-amber-600">${m.dietary.join(', ') || 'No dietary alerts'}</div>
+            <div class="text-slate-400">${m.interests.join(' · ')}</div>
+          </div>
+        `).join('');
+      }
+
+      // SECTION 2: TRIP PLANNING
+      function setTripDestination(d) { document.getElementById('trip-destination').value = d; }
+
+      function skipTripPlanning() {
+        activeTrip = {
+          id: `trip-skipped-${Date.now()}`,
+          destination: document.getElementById('trip-destination').value || 'Kyoto & Nara, Japan',
+          startDate: document.getElementById('trip-start-date').value || '2026-10-15',
+          endDate: document.getElementById('trip-end-date').value || '2026-10-20',
+          budgetLevel: document.getElementById('trip-budget').value || 'Moderate'
+        };
+        localStorage.setItem('aegis_active_trip', JSON.stringify(activeTrip));
+        showToast('Planning Skipped', 'Direct access enabled to Real-Time Dashboard.');
+        switchTab('management');
+      }
+
+      function generateItinerary() {
+        const dest = document.getElementById('trip-destination').value || 'Kyoto, Japan';
+        activeTrip = {
+          id: `trip-${Date.now()}`,
+          destination: dest,
+          startDate: document.getElementById('trip-start-date').value,
+          endDate: document.getElementById('trip-end-date').value,
+          budgetLevel: document.getElementById('trip-budget').value
+        };
+        localStorage.setItem('aegis_active_trip', JSON.stringify(activeTrip));
+
+        const diets = Array.from(new Set(members.flatMap(m => m.dietary)));
+        const pace = members[0]?.pace || 'Slow/Relaxed';
+
+        document.getElementById('itinerary-preview-card').classList.remove('hidden');
+        document.getElementById('itin-heading').textContent = `${dest} Tailored Family Journey`;
+        document.getElementById('itin-constraints-box').innerHTML = `
+          <strong>Directives Enforced:</strong> Pacing: ${pace} (+45m buffers) · Allergen Shield: ${diets.join(', ') || 'Standard clean kitchen guidelines'}.
+        `;
+
+        document.getElementById('itin-days-container').innerHTML = `
+          <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/60 dark:bg-slate-800/60 space-y-3">
+            <span class="px-2 py-0.5 rounded bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-bold">Day 1</span>
+            <h4 class="font-bold text-sm">Arrival & Peaceful Temple Grounds</h4>
+            <div class="space-y-2 text-xs text-slate-600 dark:text-slate-300">
+              <p><strong>09:45 AM:</strong> Gentle stroll through Nanzen-ji aqueduct and moss gardens (flat stone paths, step-free).</p>
+              <p><strong>12:30 PM:</strong> Curated Lunch at Tosuiro Tofu House. <span class="text-amber-600 font-semibold">Strict allergen protocol active: verified free of ${diets.join(' & ') || 'allergens'}.</span></p>
+              <p><strong>02:30 PM:</strong> Interactive Cultural Pavilion with abundant rest benches.</p>
+            </div>
+          </div>
+          <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/60 dark:bg-slate-800/60 space-y-3">
+            <span class="px-2 py-0.5 rounded bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-bold">Day 2</span>
+            <h4 class="font-bold text-sm">Bridges, Bamboo Groves & Afternoon Heritage Rest</h4>
+            <div class="space-y-2 text-xs text-slate-600 dark:text-slate-300">
+              <p><strong>10:00 AM:</strong> Arashiyama Bamboo Grove with extra buffer for slow walking.</p>
+              <p><strong>01:00 PM:</strong> Allergy-Conscious Temple Dining at Shigetsu.</p>
+              <p><strong>03:15 PM:</strong> Built-in 45-minute family tea decompression interval.</p>
+            </div>
+          </div>
+        `;
+
+        showToast('Itinerary Generated', 'Profile-honoring itinerary synthesized.');
+      }
+
+      // SECTION 3: DASHBOARD & SUGGESTIONS
+      function renderDashboard() {
+        document.getElementById('dashboard-subtitle').innerHTML = `Active Destination: <strong>${activeTrip?.destination || 'Kyoto, Japan'}</strong> · Party: <strong>${profile?.familyName || 'Family Party'}</strong>`;
+        renderSuggestions('');
+      }
+
+      function handleContextInput(val) { renderSuggestions(val); }
+      function setContextChip(txt) { document.getElementById('context-input').value = txt; renderSuggestions(txt); }
+
+      function toggleVoiceInput() {
+        const btn = document.getElementById('mic-btn');
+        btn.classList.toggle('animate-pulse');
+        showToast('Voice Input Active', 'Listening for contextual query...');
+        setTimeout(() => {
+          btn.classList.remove('animate-pulse');
+          const sample = 'Kids are getting hungry, need a nut-free lunch nearby';
+          document.getElementById('context-input').value = sample;
+          renderSuggestions(sample);
+          showToast('Voice Transcribed', `"${sample}"`);
+        }, 1200);
+      }
+
+      function handleSentiment(key, label) {
+        showToast(`Feedback: ${label}`, `Feedback registered. Updated nearby travel radar. ${MOCK_NOTICE}`);
+        renderSuggestions('feedback_' + key);
+      }
+
+      function renderSuggestions(query) {
+        const diets = Array.from(new Set(members.flatMap(m => m.dietary)));
+        const q = query.toLowerCase();
+
+        let items = [
+          {
+            cat: 'Dining',
+            title: 'Kiyomizu Organic Tea & Allergen-Safe Soba',
+            loc: '120m · 4 min walk',
+            reason: `Vetted for party allergies: [${diets.join(', ') || 'All standard'}]`,
+            tags: ['Nut-Free', 'Quiet', 'Step-Free']
+          },
+          {
+            cat: 'Break',
+            title: 'Shoryu Shaded Zen Rest Alcove',
+            loc: '250m · 6 min walk',
+            reason: 'Selected for Slow/Relaxed pacing schedule with family seating.',
+            tags: ['Rest Stop', 'Shaded', 'Cold Water Refill']
+          },
+          {
+            cat: 'Activity',
+            title: 'Traditional Handcrafted Fan Painting Workshop',
+            loc: '400m · 8 min walk',
+            reason: 'Gentle, seated indoor craft suitable for kids and adults.',
+            tags: ['Seated', 'Indoor', 'No Reservation']
+          },
+          {
+            cat: 'Logistics',
+            title: 'Stroller & Wheelchair-Accessible Gate 3 North',
+            loc: '180m',
+            reason: 'Avoids 48-step main staircase with high-speed direct elevator.',
+            tags: ['Accessibility', 'Elevator', 'Air-Conditioned']
+          }
+        ];
+
+        if (q.includes('dinner') || q.includes('food') || q.includes('hungry')) {
+          items.unshift({
+            cat: 'Dining',
+            title: 'Sanjo Hearth & Allergen-Certified Robata',
+            loc: '300m away',
+            reason: `Custom query match: Verified separate cookware for ${diets.join(', ') || 'all diets'}.`,
+            tags: ['Dinner', 'English Menu', 'Allergen Safe']
+          });
+        } else if (q.includes('rain')) {
+          items.unshift({
+            cat: 'Activity',
+            title: 'Teramachi Covered Glass-Arcade & Artisan Market',
+            loc: '150m away',
+            reason: 'Weather-resilient 100% dry covered arcade spanning 1.2km.',
+            tags: ['100% Covered', 'Dry Walkway', 'Rain-Safe']
+          });
+        }
+
+        document.getElementById('suggestions-subtitle').textContent = `Tailored for ${members[0]?.pace || 'Slow/Relaxed'} pace & ${diets.length} dietary shields.`;
+        document.getElementById('suggestions-grid').innerHTML = items.map(it => `
+          <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-slate-800/70 space-y-2">
+            <div class="flex justify-between items-start">
+              <div>
+                <span class="text-[10px] font-bold uppercase text-sky-600">${it.cat}</span>
+                <h4 class="font-bold text-sm text-slate-900 dark:text-white">${it.title}</h4>
+              </div>
+              <span class="text-xs font-mono text-slate-400">${it.loc}</span>
+            </div>
+            <div class="p-2 rounded bg-sky-50 dark:bg-sky-950/40 text-[11px] text-sky-900 dark:text-sky-200">
+              ✓ ${it.reason}
+            </div>
+            <div class="flex justify-between items-center pt-1 border-t border-slate-100 dark:border-slate-700 text-xs">
+              <span class="text-[11px] text-slate-400">${it.tags.join(' · ')}</span>
+              <button onclick="showToast('Route Mapped', 'Navigating to ${it.title}. ${MOCK_NOTICE}')" class="text-sky-600 font-bold hover:underline">Route Here &rarr;</button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // SUB-TOOLS
+      function toggleSubTool(tool) {
+        ['time', 'weather', 'emergency'].forEach(t => {
+          document.getElementById(`tool-${t}-panel`).classList.toggle('hidden', t !== tool);
+        });
+        if (tool === 'time') computeAlarms();
+        if (tool === 'weather') triggerWeatherScenario('Heavy Rain');
+        if (tool === 'emergency') triggerEmergencyTriage('child_fever');
+      }
+
+      function computeAlarms() {
+        const time = document.getElementById('calc-time').value || '12:30';
+        const pace = members[0]?.pace || 'Slow/Relaxed';
+        const buffer = pace === 'Slow/Relaxed' ? 45 : 20;
+
+        document.getElementById('calc-results').classList.remove('hidden');
+        document.getElementById('calc-results').innerHTML = `
+          <div class="flex justify-between text-xs font-bold text-slate-900 dark:text-white">
+            <span>Recommended Schedule for ${time} Arrival:</span>
+            <span class="text-amber-600 font-mono text-[10px]">${MOCK_NOTICE}</span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+            <div class="p-2 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+              <div class="text-[10px] text-slate-400 uppercase">1. Wake-Up</div>
+              <div class="font-bold text-base">09:45 AM</div>
+              <div class="text-[10px] text-slate-500">65m relaxed breakfast</div>
+            </div>
+            <div class="p-2 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+              <div class="text-[10px] text-slate-400 uppercase">2. Staging / Stroller</div>
+              <div class="font-bold text-base text-amber-500">11:15 AM</div>
+              <div class="text-[10px] text-slate-500">20m bag and water check</div>
+            </div>
+            <div class="p-2 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+              <div class="text-[10px] text-slate-400 uppercase">3. Depart Lobby</div>
+              <div class="font-bold text-base text-emerald-500">11:45 AM</div>
+              <div class="text-[10px] text-slate-500">Includes +${buffer}m family buffer</div>
+            </div>
+          </div>
+        `;
+      }
+
+      function triggerWeatherScenario(sc) {
+        document.getElementById('weather-results').innerHTML = `
+          <div class="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-xs text-amber-900 dark:text-amber-200">
+            <strong>${sc} Simulation:</strong> High precipitation. Ground steps slippery. Deployed 100% sheltered indoor alternatives.
+            <div class="text-[10px] font-mono text-amber-700 mt-0.5">${MOCK_NOTICE}</div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <div class="p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+              <h5 class="font-bold">Kyoto International Manga Museum</h5>
+              <p class="text-slate-500 text-[11px] mt-1">Direct underground subway access via Exit 2. Zero rain exposure.</p>
+            </div>
+            <div class="p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+              <h5 class="font-bold">Nishiki Covered Glass Arcade</h5>
+              <p class="text-slate-500 text-[11px] mt-1">400m fully covered canopy walk with allergen-vetted vendors.</p>
+            </div>
+          </div>
+        `;
+      }
+
+      function triggerEmergencyTriage(issue) {
+        const title = issue === 'child_fever' ? "Pediatric Sudden Fever (39°C)" : issue === 'lost_med' ? "Lost Prescription Medication" : "Severe Allergic Reaction";
+        const phrase = issue === 'child_fever' 
+          ? "子供が急な高熱（39度）を出しています。英語対応が可能な最寄りの小児救急病院へ連れて行ってください。"
+          : "常備薬（処方薬）を紛失してしまいました。代替の処方箋を発行してもらうため医師の診察を受けたいです。";
+        const eng = issue === 'child_fever'
+          ? "My child has a sudden high fever (39°C). Please take us to the nearest pediatric emergency hospital with English-speaking staff."
+          : "I lost my essential prescription medication. I need to consult a doctor for a replacement prescription.";
+
+        document.getElementById('emergency-results').innerHTML = `
+          <div class="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 text-xs">
+            <h4 class="font-bold text-rose-900 dark:text-rose-200">${title} Protocol</h4>
+            <ol class="list-decimal pl-4 space-y-1 text-slate-700 dark:text-slate-300 text-[11px] mt-2">
+              <li>Check alert responsiveness, hydration, and record exact temperature in °C and °F.</li>
+              <li>Offer lukewarm cloth on forehead and small frequent sips of electrolyte solution.</li>
+              <li>Show the bilingual card below to your hotel concierge or taxi driver immediately.</li>
+            </ol>
+          </div>
+
+          <div class="p-4 rounded-xl bg-slate-900 text-white space-y-2 border border-slate-700 text-xs">
+            <div class="flex justify-between text-sky-400 font-bold">
+              <span>BILINGUAL CARD (Show to Driver / Concierge):</span>
+              <button onclick="navigator.clipboard?.writeText('${phrase}'); showToast('Copied', 'Japanese phrase copied.');" class="underline">Copy Japanese</button>
+            </div>
+            <div class="text-sm sm:text-base font-bold text-emerald-300 leading-relaxed">${phrase}</div>
+            <div class="text-slate-400 italic text-[11px]">Meaning: "${eng}"</div>
+          </div>
+
+          <div class="p-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs flex justify-between">
+            <span><strong>Emergency Hotline:</strong> 119 (Dispatch) · 0570-000-911 (Multilingual)</span>
+            <span class="font-mono text-amber-600 text-[10px]">${MOCK_NOTICE}</span>
+          </div>
+        `;
+      }
+
+      // ADMIN & PRESETS
+      function toggleAdminTray() {
+        document.getElementById('admin-tray-panel').classList.toggle('hidden');
+      }
+
+      function resetAppAndClearDemoData() {
+        localStorage.clear();
+        profile = null;
+        activeTrip = null;
+        members = [
+          {
+            id: 'm-clean',
+            name: 'Alex Morgan',
+            role: 'Self',
+            dietary: ['Vegetarian'],
+            pace: 'Slow/Relaxed',
+            interests: ['History/Culture', 'Foodie'],
+            customPreferences: ['Prefers step-free walking paths']
+          }
+        ];
+        activeMemberIdx = 0;
+        wizardStep = 1;
+        currentTab = 'onboarding';
+        renderAll();
+        showToast('App Reset Complete', 'All demo profiles wiped. Returned to clean onboarding.');
+        try { window.location.reload(); } catch(e) {}
+      }
+
+      function loadDemoFamilyProfile() {
+        profile = {
+          id: 'demo-miller',
+          familyName: 'The Miller Family',
+          updatedAt: new Date().toISOString(),
+          members: [
+            {
+              id: 'm-1',
+              name: 'Robert Miller',
+              role: 'Self',
+              dietary: ['Nut Allergy', 'Vegetarian'],
+              pace: 'Slow/Relaxed',
+              interests: ['History/Culture', 'Foodie'],
+              customPreferences: ['Prefers morning walks before 10 AM', 'Step-free walking routes']
+            },
+            {
+              id: 'm-2',
+              name: 'Sarah Miller',
+              role: 'Spouse',
+              dietary: ['Gluten-Free'],
+              pace: 'Slow/Relaxed',
+              interests: ['Outdoor Adventure', 'History/Culture'],
+              customPreferences: ['Shaded transit preferred']
+            },
+            {
+              id: 'm-3',
+              name: 'Leo Miller (Age 6)',
+              role: 'Child',
+              dietary: ['Nut Allergy'],
+              pace: 'Slow/Relaxed',
+              interests: ['Kid-Friendly'],
+              customPreferences: ['Afternoon quiet hour needed']
+            }
+          ]
+        };
+        activeTrip = {
+          id: 'trip-kyoto',
+          destination: 'Kyoto & Nara, Japan',
+          startDate: '2026-10-15',
+          endDate: '2026-10-20',
+          budgetLevel: 'Moderate'
+        };
+        localStorage.setItem('aegis_traveler_profile', JSON.stringify(profile));
+        localStorage.setItem('aegis_active_trip', JSON.stringify(activeTrip));
+        members = profile.members;
+        renderAll();
+        switchTab('management');
+        showToast('Preset Loaded', 'The Miller Family (3 members, allergies, slow pace) loaded.');
+      }
+
+      // DOWNLOAD UTILITIES (Blob Based)
+      function openDownloadModal() { document.getElementById('modal-download').classList.remove('hidden'); }
+      function closeDownloadModal() { document.getElementById('modal-download').classList.add('hidden'); }
+
+      function downloadBlob(filename, text, mime) {
+        const blob = new Blob([text], { type: mime });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        showToast('File Downloaded', `Saved ${filename} for offline use.`);
+      }
+
+      function downloadItineraryMarkdown() {
+        const dest = activeTrip?.destination || 'Kyoto';
+        const diets = Array.from(new Set(members.flatMap(m => m.dietary))).join(', ') || 'None';
+        const md = `# ${dest} — Trip Pilot Offline Dossier\n` +
+          `Party: ${profile?.familyName || 'Family Party'} (${members.length} travelers)\n` +
+          `Notice: ${MOCK_NOTICE}\n\n` +
+          `## Pacing & Allergens\n- Pace: ${members[0]?.pace || 'Slow/Relaxed'}\n- Dietary Shield: ${diets}\n\n` +
+          `## Day 1 Schedule\n- 09:45 AM: Nanzen-ji Temple Grounds\n- 12:30 PM: Tosuiro Tofu (Allergen-Vetted)\n- 02:30 PM: Interactive Culture Pavilion\n\n` +
+          `## Emergency Contacts\n- Ambulance: 119\n- 24/7 Helpline: 0570-000-911\n`;
+        downloadBlob(`trip_pilot_${dest.toLowerCase().replace(/[^a-z0-9]/g, '_')}_itinerary.md`, md, 'text/markdown;charset=utf-8');
+      }
+
+      function downloadEmergencyCardsText() {
+        const txt = `TRIP PILOT: BILINGUAL EMERGENCY CARDS\n${MOCK_NOTICE}\n\n` +
+          `JAPANESE (Pediatric Fever):\n子供が急な高熱（39度）を出しています。英語対応が可能な最寄りの小児救急病院へ連れて行ってください。\n\n` +
+          `Hotline: 119 (Japan Emergency Ambulance)\n`;
+        downloadBlob('trip_pilot_emergency_bilingual_cards.txt', txt, 'text/plain;charset=utf-8');
+      }
+
+      function downloadProfileJson() {
+        const json = JSON.stringify({ system: 'Trip Pilot', notice: MOCK_NOTICE, profile: profile || { members } }, null, 2);
+        downloadBlob('trip_pilot_traveler_profile.json', json, 'application/json;charset=utf-8');
+      }
+
+      function downloadFullBundleJson() {
+        const json = JSON.stringify({ system: 'Trip Pilot', notice: MOCK_NOTICE, profile: profile || { members }, trip: activeTrip }, null, 2);
+        downloadBlob('trip_pilot_full_bundle.json', json, 'application/json;charset=utf-8');
+      }
+
+      // TOAST HELPER
+      function showToast(title, msg) {
+        const box = document.getElementById('toast-box');
+        const t = document.createElement('div');
+        t.className = 'pointer-events-auto p-3.5 rounded-xl bg-white/95 dark:bg-slate-900/95 border border-slate-200 dark:border-slate-800 shadow-xl backdrop-blur-md text-xs transition-all animate-in fade-in slide-in-from-top-2';
+        t.innerHTML = `
+          <div class="font-bold text-slate-900 dark:text-white flex justify-between">
+            <span>${title}</span>
+            <button onclick="this.parentElement.parentElement.remove()" class="text-slate-400 hover:text-slate-600">&times;</button>
+          </div>
+          <div class="text-slate-600 dark:text-slate-300 mt-0.5">${msg}</div>
+        `;
+        box.appendChild(t);
+        setTimeout(() => { if (t.parentElement) t.remove(); }, 4000);
+      }
+    </script>
   </body>
 </html>
-
